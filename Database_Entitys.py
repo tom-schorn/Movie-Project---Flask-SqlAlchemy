@@ -1,9 +1,9 @@
-import sqlalchemy
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import orm, Column, Integer, String, ForeignKey, DateTime
-engine = sqlalchemy.create_engine("sqlite:///movie.db")
-base = orm.declarative_base()
 
-class User(base):
+db = SQLAlchemy()
+
+class User(db.Model):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     username = Column(String(80), unique=True)
@@ -13,7 +13,7 @@ class User(base):
     def __repr__(self):
         return f'<User {self.username}>'
 
-class Movie(base):
+class Movie(db.Model,):
     __tablename__ = 'movies'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'))
