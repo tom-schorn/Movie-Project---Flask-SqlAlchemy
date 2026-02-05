@@ -1,9 +1,12 @@
 from Database_Entitys import db, User, Movie
+import requests
+import os
 
 
 class DataManager():
     def __init__(self):
-        pass
+        self.omdb_api_key = os.getenv('OMDB_API_KEY')
+        self.omdb_url = 'http://www.omdbapi.com/'
 
     def add_user(self, username):
         user = User(username=username)
@@ -14,17 +17,31 @@ class DataManager():
     def get_users(self):
         return User.query.all()
 
-    def add_movie(self, user_id, title, publication_date, director, img_url):
-        movie = Movie(
-            user_id=user_id,
-            title=title,
-            publication_date=publication_date,
-            director=director,
-            img_url=img_url
-        )
-        db.session.add(movie)
-        db.session.commit()
-        return movie
+    def add_movie(self, user_id, title):
+        # Fetch movie data from OMDB API
+        params = {
+            'apikey': self.omdb_api_key,
+            't': title
+        }
+        response = requests.get(self.omdb_url, params=params)
+        data = response.json()
+
+        if data.get('Response') == 'True':
+            publication_date = data.get('Year', '')
+            director = data.get('Director', '')
+            img_url = data.get('Poster', '')
+
+            movie = Movie(
+                user_id=user_id,
+                title=data.get('Title', title),
+                publication_date=publication_date,
+                director=director,
+                img_url=img_url
+            )
+            db.session.add(movie)
+            db.session.commit()
+            return movie
+        return None
 
     def get_movies(self, user_id):
         return Movie.query.filter_by(user_id=user_id).all()

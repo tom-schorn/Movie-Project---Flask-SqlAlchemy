@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}User Movies{% endblock %}
+
+{% block content %}
+    <a href="{{ url_for('home') }}" class="back-link">← Back to Home</a>
+
+    <h1>Movies</h1>
+
+    <h2>Add New Movie</h2>
+    <form action="{{ url_for('add_movie', user_id=user_id) }}" method="POST">
+        <label for="title">Movie Title:</label>
+        <input type="text" id="title" name="title" placeholder="Enter movie title..." required>
+        <button type="submit">Add Movie</button>
+    </form>
+
+    <h2>Movie List</h2>
+    {% if movies %}
+    <ul>
+        {% for movie in movies %}
+        <li>
+            <div class="movie-info">
+                <strong>{{ movie.title }}</strong> ({{ movie.publication_date }})
+                <br>Director: {{ movie.director }}
+                {% if movie.img_url and movie.img_url != 'N/A' %}
+                <br><img src="{{ movie.img_url }}" alt="{{ movie.title }}" style="max-width: 200px;">
+                {% endif %}
+            </div>
+
+            <div class="movie-actions">
+                <form action="{{ url_for('update_movie', user_id=user_id, movie_id=movie.id) }}" method="POST" class="inline-form">
+                    <input type="text" name="new_title" placeholder="New title" required>
+                    <button type="submit">Update Title</button>
+                </form>
+
+                <form action="{{ url_for('delete_movie', user_id=user_id, movie_id=movie.id) }}" method="POST" class="inline-form">
+                    <button type="submit" class="delete-btn" onclick="return confirm('Are you sure you want to delete this movie?')">Delete</button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="no-movies">No movies yet. Add your first movie above!</p>
+    {% endif %}
+{% endblock %}
