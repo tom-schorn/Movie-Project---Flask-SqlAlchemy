@@ -27,7 +27,7 @@ def home():
 
 @app.route('/users', methods=['POST'])
 def add_user():
-    username = request.form.get('username')
+    username = request.form.get('username', '').strip()
     if username:
         data_manager.add_user(username)
         flash(f'User "{username}" successfully added!', 'success')
