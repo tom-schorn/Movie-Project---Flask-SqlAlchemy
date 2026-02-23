@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import orm, Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import orm, Column, Integer, String, ForeignKey, DateTime, UniqueConstraint
 
 db = SQLAlchemy()
 
@@ -13,11 +13,12 @@ class User(db.Model):
     def __repr__(self):
         return f'<User {self.username}>'
 
-class Movie(db.Model,):
+class Movie(db.Model):
     __tablename__ = 'movies'
+    __table_args__ = (UniqueConstraint('user_id', 'title', name='uix_user_movie'),)
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'))
-    title = Column(String(120), unique=True)
+    title = Column(String(120))
     publication_date = Column(DateTime)
     director = Column(String(80))
     img_url = Column(String(200))

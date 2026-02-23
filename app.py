@@ -46,11 +46,14 @@ def user_movies(user_id):
 def add_movie(user_id):
     title = request.form.get('title')
     if title:
-        movie = data_manager.add_movie(user_id, title)
-        if movie:
-            flash(f'Movie "{movie.title}" successfully added!', 'success')
-        else:
-            flash(f'Could not find movie "{title}" in OMDB database. Please check the title or API key.', 'error')
+        try:
+            movie = data_manager.add_movie(user_id, title)
+            if movie:
+                flash(f'Movie "{movie.title}" successfully added!', 'success')
+            else:
+                flash(f'Could not find movie "{title}" in OMDB database. Please check the title or API key.', 'error')
+        except ValueError as e:
+            flash(str(e), 'error')
     else:
         flash('Movie title is required!', 'error')
     return redirect(url_for('user_movies', user_id=user_id))
@@ -60,11 +63,14 @@ def add_movie(user_id):
 def update_movie(user_id, movie_id):
     new_title = request.form.get('new_title')
     if new_title:
-        movie = data_manager.update_movie(movie_id, new_title)
-        if movie:
-            flash(f'Movie title updated to "{new_title}"!', 'success')
-        else:
-            flash('Movie not found!', 'error')
+        try:
+            movie = data_manager.update_movie(movie_id, new_title)
+            if movie:
+                flash(f'Movie title updated to "{new_title}"!', 'success')
+            else:
+                flash('Movie not found!', 'error')
+        except ValueError as e:
+            flash(str(e), 'error')
     else:
         flash('New title is required!', 'error')
     return redirect(url_for('user_movies', user_id=user_id))
